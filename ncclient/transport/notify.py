@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from datetime import datetime
 from ncclient.xml_ import to_ele
 
 class Notification(object):
     def __init__(self, raw):
+        self.client_timestamp = datetime.utcnow()
         self._raw = raw
         self._root_ele = to_ele(raw)
 

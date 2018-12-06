@@ -92,6 +92,7 @@ class DefaultDeviceHandler(object):
             "urn:ietf:params:netconf:capability:validate:1.0",
             "urn:ietf:params:netconf:capability:xpath:1.0",
             "urn:ietf:params:netconf:capability:notification:1.0",
+            "urn:ietf:params:xml:ns:yang:ietf-event-notifications",
             "urn:liberouter:params:netconf:capability:power-control:1.0",
             "urn:ietf:params:netconf:capability:interleave:1.0"
         ]

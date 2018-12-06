@@ -62,3 +62,103 @@ class CreateSubscription(RPC):
             sub_ele(node, "stopTime").text = stop_time
 
         return self._request(node)
+
+class EstablishSubscription(RPC):
+    "`establish-subscription` RPC. Depends on the `:notification` capability."
+
+    DEPENDS = [':notification']
+
+    def request(self, stream=None, encoding=None,
+                filter=None, subtree_filter=None, xpath_filter=None,
+                period=None, no_synch_on_start=False, dampening_period=None):
+        """Creates a subscription for notifications from the server.
+
+        *filter* specifies the subset of notifications to receive (by
+        default all notificaitons are received)
+
+        :seealso: :ref:`filter_params`
+
+        *stream_name* specifies the notification stream name. The
+        default is None meaning all streams.
+
+        *start_time* triggers the notification replay feature to
+        replay notifications from the given time. The default is None,
+        meaning that this is not a replay subscription. The format is
+        an RFC 3339/ISO 8601 date and time.
+
+        *stop_time* indicates the end of the notifications of
+        interest. This parameter must be used with *start_time*. The
+        default is None, meaning that (if *start_time* is present) the
+        notifications will continue until the subscription is
+        terminated. The format is an RFC 3339/ISO 8601 date and time.
+
+        """
+        ns = {
+            None: IETF_NOTIFICATION_NS,
+            'yp': IETF_PUSH_NS,
+            }
+        node = new_ele_ns("establish-subscription", IETF_NOTIFICATION_NS,
+                          nsmap=ns)
+
+        if stream is not None:
+            sub_ele_ns(node, "stream", IETF_NOTIFICATION_NS).text = stream
+
+        if encoding is not None:
+            sub_ele_ns(node, "encoding", IETF_NOTIFICATION_NS).text = encoding
+
+        if filter is not None:
+            # node.append(util.build_filter(filter))
+            node.append(filter)
+
+        if subtree_filter is not None:
+            node.append(util.build_filter(subtree_filter))
+
+        if xpath_filter is not None:
+            sub_ele_ns(node, "xpath-filter", IETF_PUSH_NS).text = xpath_filter
+
+        if period is not None:
+            sub_ele_ns(node, "period", IETF_PUSH_NS).text = str(period)
+
+        if no_synch_on_start:
+            sub_ele_ns(node, "no-synch-on-start", IETF_PUSH_NS)
+
+        if dampening_period is not None:
+            sub_ele_ns(node, "dampening-period", IETF_PUSH_NS).text = str(dampening_period)
+
+        return self._request(node)
+
+class DeleteSubscription(RPC):
+    "`delete-subscription` RPC. Depends on the `:notification` capability."
+
+    DEPENDS = [':notification']
+
+    def request(self, subscription_id):
+        """Creates a subscription for notifications from the server.
+
+        *filter* specifies the subset of notifications to receive (by
+        default all notificaitons are received)
+
+        :seealso: :ref:`filter_params`
+
+        *stream_name* specifies the notification stream name. The
+        default is None meaning all streams.
+
+        *start_time* triggers the notification replay feature to
+        replay notifications from the given time. The default is None,
+        meaning that this is not a replay subscription. The format is
+        an RFC 3339/ISO 8601 date and time.
+
+        *stop_time* indicates the end of the notifications of
+        interest. This parameter must be used with *start_time*. The
+        default is None, meaning that (if *start_time* is present) the
+        notifications will continue until the subscription is
+        terminated. The format is an RFC 3339/ISO 8601 date and time.
+
+        """
+        node = new_ele_ns("delete-subscription", IETF_NOTIFICATION_NS,
+                          nsmap={None: IETF_NOTIFICATION_NS})
+        if subscription_id is not None:
+            sub_ele_ns(node, "subscription-id", IETF_NOTIFICATION_NS).text = \
+                subscription_id
+
+        return self._request(node)
